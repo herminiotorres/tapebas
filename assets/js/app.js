@@ -1,6 +1,6 @@
 // We import the CSS which is extracted to its own file by esbuild.
 // Remove this line if you add a your own CSS build pipeline (e.g postcss).
-import "../css/app.css"
+// import "../css/app.css"
 
 // If you want to use Phoenix channels, run `mix help phx.gen.channel`
 // to get started and then uncomment the line below.
@@ -30,9 +30,22 @@ let csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("
 let liveSocket = new LiveSocket("/live", Socket, {params: {_csrf_token: csrfToken}})
 
 // Show progress bar on live navigation and form submits
-topbar.config({barColors: {0: "#29d"}, shadowColor: "rgba(0, 0, 0, .3)"})
-window.addEventListener("phx:page-loading-start", info => topbar.show())
-window.addEventListener("phx:page-loading-stop", info => topbar.hide())
+// looking at https://fly.io/phoenix-files/make-your-liveview-feel-faster
+// Only display if still
+// loading after 120 msec
+topbar.config({ barColors: { 0: "#29d" }, shadowColor: "rgba(0, 0, 0, .3)" })
+
+let topBarScheduled = undefined;
+window.addEventListener("phx:page-loading-start", () => {
+  if (!topBarScheduled) {
+    topBarScheduled = setTimeout(() => topbar.show(), 120)
+  }
+})
+window.addEventListener("phx:page-loading-stop", () => {
+  clearTimeout(topBarScheduled)
+  topBarScheduled = undefined
+  topbar.hide()
+})
 
 // connect if there are any LiveViews on the page
 liveSocket.connect()
@@ -42,4 +55,3 @@ liveSocket.connect()
 // >> liveSocket.enableLatencySim(1000)  // enabled for duration of browser session
 // >> liveSocket.disableLatencySim()
 window.liveSocket = liveSocket
-
