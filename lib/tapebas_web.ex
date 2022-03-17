@@ -47,6 +47,8 @@ defmodule TapebasWeb do
       use Phoenix.LiveView,
         layout: {TapebasWeb.LayoutView, "live.html"}
 
+      on_mount PhoenixProfiler
+
       unquote(view_helpers())
     end
   end
