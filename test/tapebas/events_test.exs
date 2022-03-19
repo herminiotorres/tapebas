@@ -5,6 +5,7 @@ defmodule Tapebas.EventsTest do
 
   alias Tapebas.Events
   alias Tapebas.Events.Event
+  alias Tapebas.Events.Question
   alias Tapebas.Events.Talk
 
   describe "events" do
@@ -21,13 +22,14 @@ defmodule Tapebas.EventsTest do
     end
 
     test "create_event/1 with valid data creates a event" do
-      user = Tapebas.AccountsFixtures.user_fixture()
-      valid_attrs = %{title: "some title", description: "some description", user_id: user.id}
+      %{id: user_id} = Tapebas.AccountsFixtures.user_fixture()
+      valid_attrs = %{title: "some title", description: "some description", user_id: user_id}
 
       assert {:ok, %Event{} = event} = Events.create_event(valid_attrs)
       assert event.slug == "some-title"
       assert event.title == "some title"
       assert event.description == "some description"
+      assert event.user_id == user_id
     end
 
     test "create_event/1 with invalid data returns error changeset" do
@@ -75,7 +77,7 @@ defmodule Tapebas.EventsTest do
     end
 
     test "create_talk/1 with valid data creates a talk" do
-      event = Tapebas.EventsFixtures.event_fixture()
+      event = event_fixture()
 
       valid_attrs = %{
         speaker: "some speaker",
@@ -124,6 +126,62 @@ defmodule Tapebas.EventsTest do
     test "change_talk/1 returns a talk changeset" do
       talk = talk_fixture()
       assert %Ecto.Changeset{} = Events.change_talk(talk)
+    end
+  end
+
+  describe "questions" do
+    @invalid_attrs %{answered: nil, title: nil}
+
+    test "list_questions/0 returns all questions" do
+      question = question_fixture()
+      assert Events.list_questions() == [question]
+    end
+
+    test "get_question!/1 returns the question with given id" do
+      question = question_fixture()
+      assert Events.get_question!(question.id) == question
+    end
+
+    test "create_question/1 with valid data creates a question" do
+      %{id: user_id} = Tapebas.AccountsFixtures.user_fixture()
+      %{id: talk_id} = talk_fixture()
+      valid_attrs = %{answered: true, title: "some title", user_id: user_id, talk_id: talk_id}
+
+      assert {:ok, %Question{} = question} = Events.create_question(valid_attrs)
+      assert question.answered == true
+      assert question.title == "some title"
+      assert question.user_id == user_id
+      assert question.talk_id == talk_id
+    end
+
+    test "create_question/1 with invalid data returns error changeset" do
+      assert {:error, %Ecto.Changeset{}} = Events.create_question(@invalid_attrs)
+    end
+
+    test "update_question/2 with valid data updates the question" do
+      question = question_fixture()
+      update_attrs = %{answered: false, title: "some updated title"}
+
+      assert {:ok, %Question{} = question} = Events.update_question(question, update_attrs)
+      assert question.answered == false
+      assert question.title == "some updated title"
+    end
+
+    test "update_question/2 with invalid data returns error changeset" do
+      question = question_fixture()
+      assert {:error, %Ecto.Changeset{}} = Events.update_question(question, @invalid_attrs)
+      assert question == Events.get_question!(question.id)
+    end
+
+    test "delete_question/1 deletes the question" do
+      question = question_fixture()
+      assert {:ok, %Question{}} = Events.delete_question(question)
+      assert_raise Ecto.NoResultsError, fn -> Events.get_question!(question.id) end
+    end
+
+    test "change_question/1 returns a question changeset" do
+      question = question_fixture()
+      assert %Ecto.Changeset{} = Events.change_question(question)
     end
   end
 end

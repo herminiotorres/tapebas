@@ -8,6 +8,7 @@ defmodule Tapebas.Events.Talk do
     field :speaker, :string
     field :title, :string
     field :type, Ecto.Enum, values: [:keynote, :general, :beginner, :advanced], default: :general
+
     belongs_to :event, Tapebas.Events.Event, foreign_key: :event_id
 
     timestamps()
