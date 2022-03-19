@@ -54,7 +54,8 @@ defmodule Tapebas.MixProject do
       # additional deps
       {:phoenix_profiler, "~> 0.1.0"},
       {:credo, "~> 1.6", only: [:dev, :test], runtime: false},
-      {:slugify, "~> 1.3"}
+      {:slugify, "~> 1.3"},
+      {:faker, "~> 0.17", only: [:dev, :test]}
     ]
   end
 
