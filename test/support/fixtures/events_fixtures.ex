@@ -14,6 +14,10 @@ defmodule Tapebas.EventsFixtures do
   """
   def unique_event_title, do: "some title#{System.unique_integer([:positive])}"
 
+  @doc """
+  Generate a random talk type.
+  """
+  def random_talk_type, do: Enum.random(~w(keynote general beginner advanced))
 
   @doc """
   Generate a event.
@@ -33,5 +37,24 @@ defmodule Tapebas.EventsFixtures do
       |> Tapebas.Events.create_event()
 
     event
+  end
+
+  @doc """
+  Generate a talk.
+  """
+  def talk_fixture(attrs \\ %{}) do
+    event = event_fixture()
+
+    {:ok, talk} =
+      attrs
+      |> Enum.into(%{
+        speaker: "some speaker",
+        title: "some title",
+        type: random_talk_type(),
+        event_id: event.id
+      })
+      |> Tapebas.Events.create_talk()
+
+    talk
   end
 end

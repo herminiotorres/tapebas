@@ -6,7 +6,9 @@ defmodule Tapebas.Accounts do
   import Ecto.Query, warn: false
   alias Tapebas.Repo
 
-  alias Tapebas.Accounts.{User, UserToken, UserNotifier}
+  alias Tapebas.Accounts.User
+  alias Tapebas.Accounts.UserNotifier
+  alias Tapebas.Accounts.UserToken
 
   ## Database getters
 
