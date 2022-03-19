@@ -11,6 +11,8 @@ defmodule Tapebas.Events.Talk do
 
     belongs_to :event, Tapebas.Events.Event, foreign_key: :event_id
 
+    has_many :questions, Tapebas.Events.Question, on_delete: :delete_all
+
     timestamps()
   end
 
