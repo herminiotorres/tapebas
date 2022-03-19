@@ -6,7 +6,14 @@ module.exports = {
   ],
   //darkMode: false, // or 'media' or 'class'
   theme: {
-    extend: {},
+    extend: {
+      fontFamily: {
+        roboto: ['"Roboto"']
+      },
+      colors: {
+        'dim': '#15202B',
+      }
+    },
   },
   variants: {
     extend: {},
