@@ -8,8 +8,10 @@ defmodule Tapebas.Events.Question do
     field :answered, :boolean, default: false
     field :title, :string
 
-    belongs_to :talk, Tapebas.Events.Talk, foreign_key: :talk_id
     belongs_to :user, Tapebas.Accounts.User, foreign_key: :user_id
+    belongs_to :talk, Tapebas.Events.Talk, foreign_key: :talk_id
+
+    has_many :comments, Tapebas.Events.Comment, on_delete: :delete_all
 
     timestamps()
   end

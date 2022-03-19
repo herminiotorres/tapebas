@@ -12,6 +12,7 @@ defmodule Tapebas.Accounts.User do
 
     has_many :events, Tapebas.Events.Event, on_delete: :delete_all
     has_many :questions, Tapebas.Events.Question, on_delete: :nilify_all
+    has_many :comments, Tapebas.Events.Comment, on_delete: :nilify_all
 
     timestamps()
   end

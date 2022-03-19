@@ -43,7 +43,7 @@ defmodule Tapebas.EventsFixtures do
   Generate a talk.
   """
   def talk_fixture(attrs \\ %{}) do
-    event = event_fixture()
+    %{id: event_id} = event_fixture()
 
     {:ok, talk} =
       attrs
@@ -51,7 +51,7 @@ defmodule Tapebas.EventsFixtures do
         speaker: "some speaker",
         title: "some title",
         type: random_talk_type(),
-        event_id: event.id
+        event_id: event_id
       })
       |> Tapebas.Events.create_talk()
 
@@ -62,8 +62,8 @@ defmodule Tapebas.EventsFixtures do
   Generate a question.
   """
   def question_fixture(attrs \\ %{}) do
-    talk = talk_fixture()
     %{id: user_id} = Tapebas.AccountsFixtures.user_fixture()
+    %{id: talk_id} = talk_fixture()
 
     {:ok, question} =
       attrs
@@ -71,10 +71,29 @@ defmodule Tapebas.EventsFixtures do
         answered: Enum.random([true, false]),
         title: "some title",
         user_id: user_id,
-        talk_id: talk.id
+        talk_id: talk_id
       })
       |> Tapebas.Events.create_question()
 
     question
+  end
+
+  @doc """
+  Generate a comment.
+  """
+  def comment_fixture(attrs \\ %{}) do
+    %{id: user_id} = Tapebas.AccountsFixtures.user_fixture()
+    %{id: question_id} = question_fixture()
+
+    {:ok, comment} =
+      attrs
+      |> Enum.into(%{
+        message: "some message",
+        user_id: user_id,
+        question_id: question_id
+      })
+      |> Tapebas.Events.create_comment()
+
+    comment
   end
 end
