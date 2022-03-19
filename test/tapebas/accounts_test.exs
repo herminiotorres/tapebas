@@ -62,8 +62,7 @@ defmodule Tapebas.AccountsTest do
       {:error, changeset} = Accounts.register_user(%{email: "not valid", password: "not valid"})
 
       assert %{
-               email: ["must have the @ sign and no spaces"],
-               password: ["should be at least 12 character(s)"]
+               email: ["must have the @ sign and no spaces"]
              } = errors_on(changeset)
     end
 
@@ -267,7 +266,6 @@ defmodule Tapebas.AccountsTest do
         })
 
       assert %{
-               password: ["should be at least 12 character(s)"],
                password_confirmation: ["does not match password"]
              } = errors_on(changeset)
     end
@@ -476,7 +474,6 @@ defmodule Tapebas.AccountsTest do
         })
 
       assert %{
-               password: ["should be at least 12 character(s)"],
                password_confirmation: ["does not match password"]
              } = errors_on(changeset)
     end
