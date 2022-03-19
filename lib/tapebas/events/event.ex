@@ -8,7 +8,9 @@ defmodule Tapebas.Events.Event do
     field :title, :string
     field :slug, :string
     field :description, :string
+
     belongs_to :user, Tapebas.Accounts.User, foreign_key: :user_id
+    has_many :talks, Tapebas.Events.Talk, on_delete: :delete_all
 
     timestamps()
   end
