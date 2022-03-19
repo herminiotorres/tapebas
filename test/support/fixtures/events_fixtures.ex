@@ -57,4 +57,24 @@ defmodule Tapebas.EventsFixtures do
 
     talk
   end
+
+  @doc """
+  Generate a question.
+  """
+  def question_fixture(attrs \\ %{}) do
+    talk = talk_fixture()
+    %{id: user_id} = Tapebas.AccountsFixtures.user_fixture()
+
+    {:ok, question} =
+      attrs
+      |> Enum.into(%{
+        answered: Enum.random([true, false]),
+        title: "some title",
+        user_id: user_id,
+        talk_id: talk.id
+      })
+      |> Tapebas.Events.create_question()
+
+    question
+  end
 end
