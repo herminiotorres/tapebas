@@ -10,6 +10,9 @@ defmodule Tapebas.Accounts.User do
     field :hashed_password, :string, redact: true
     field :confirmed_at, :naive_datetime
 
+    has_many :events, Tapebas.Events.Event, on_delete: :delete_all
+    has_many :questions, Tapebas.Events.Question, on_delete: :nilify_all
+
     timestamps()
   end
 
