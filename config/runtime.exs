@@ -44,8 +44,6 @@ if config_env() == :prod do
   port = String.to_integer(System.get_env("PORT") || "4000")
 
   config :tapebas, TapebasWeb.Endpoint,
-    load_from_system_env: true,
-    url: [scheme: "https", host: host, port: 443],
     http: [
       # Enable IPv6 and bind on all interfaces.
       # Set it to  {0, 0, 0, 0, 0, 0, 0, 1} for local network only access.
