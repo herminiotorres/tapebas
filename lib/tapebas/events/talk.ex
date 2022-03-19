@@ -9,6 +9,8 @@ defmodule Tapebas.Events.Talk do
     field :title, :string
     field :type, Ecto.Enum, values: [:keynote, :general, :beginner, :advanced], default: :general
 
+    embeds_many :likes, Tapebas.Events.Like
+
     belongs_to :event, Tapebas.Events.Event, foreign_key: :event_id
 
     has_many :questions, Tapebas.Events.Question, on_delete: :delete_all
@@ -27,5 +29,11 @@ defmodule Tapebas.Events.Talk do
     |> validate_length(:title, min: 10)
     |> validate_length(:speaker, min: 2)
     |> foreign_key_constraint(:user_id)
+  end
+
+  def like_changeset(talk, attrs) do
+    talk
+    |> cast(attrs, @fields)
+    |> cast_embed(:likes, required: true)
   end
 end
