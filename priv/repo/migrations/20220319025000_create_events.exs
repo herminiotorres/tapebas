@@ -6,7 +6,7 @@ defmodule Tapebas.Repo.Migrations.CreateEvents do
       add :title, :citext, null: false
       add :slug, :string, null: false
       add :description, :text
-      add :user_id, references(:users, on_delete: :nothing)
+      add :user_id, references(:users, on_delete: :delete_all), null: false
 
       timestamps()
     end

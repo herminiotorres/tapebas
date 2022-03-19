@@ -2,19 +2,17 @@ defmodule Tapebas.Events.Event do
   use Ecto.Schema
   import Ecto.Changeset
 
-  alias Tapebas.Accounts.User
-
   schema "events" do
     field :title, :string
     field :slug, :string
     field :description, :string
-    belongs_to :user, User, foreign_key: :user_id
+    belongs_to :user, Tapebas.Accounts.User, foreign_key: :user_id
 
     timestamps()
   end
 
   @fields ~w(title slug description user_id)a
-  @required_fields ~w(title slug)a
+  @required_fields ~w(title slug user_id)a
 
   @doc false
   def changeset(event, attrs) do
@@ -22,7 +20,7 @@ defmodule Tapebas.Events.Event do
     |> cast(attrs, @fields)
     |> build_slug()
     |> validate_required(@required_fields)
-    |> validate_length(:title, min: 10, max: 145)
+    |> validate_length(:title, min: 10)
     |> unique_constraint(:slug)
     |> unique_constraint(:title)
     |> foreign_key_constraint(:user_id)
