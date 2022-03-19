@@ -1,27 +1,35 @@
-<h1>Log in</h1>
-
-<.form let={f} for={@conn} action={Routes.user_session_path(@conn, :create)} as={:user}>
+<div class="flex w-screen justify-center">
+<.form let={f} for={@conn} action={Routes.user_session_path(@conn, :create)} as={:user} class="mt-1 rounded px-8 pt-6 pb-8 mb-4">
   <%= if @error_message do %>
     <div class="alert alert-danger">
       <p><%= @error_message %></p>
     </div>
   <% end %>
 
-  <%= label f, :email %>
-  <%= email_input f, :email, required: true %>
+  <div class="mb-4">
+    <%= label f, :email, class: "block text-gray-700 text-sm font-bold mb-2" %>
+    <%= email_input f, :email, required: true, class: "shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:ring-indigo-500 focus:border-indigo-500" %>
+  </div>
 
-  <%= label f, :password %>
-  <%= password_input f, :password, required: true %>
+  <div class="mb-6">
+    <%= label f, :password, class: "block text-gray-700 text-sm font-bold mb-2" %>
+    <%= password_input f, :password, required: true, class: "shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:ring-indigo-500 focus:border-indigo-500" %>
+  </div>
 
-  <%= label f, :remember_me, "Keep me logged in for 60 days" %>
-  <%= checkbox f, :remember_me %>
+  <div class="inline-flex mb-6 gap-x-4 justify-center items-center">
+    <%= checkbox f, :remember_me, class: "rounded h-8 w-8 text-indigo-500 focus:ring-indigo-500 focus:border-indigo-500" %>
+    <%= label f, :remember_me, "Keep me logged in for 60 days" %>
+  </div>
 
-  <div>
-    <%= submit "Log in" %>
+  <div class="flex items-center justify-between space-x-12">
+    <div>
+      <%= submit "Log in", class: "bg-indigo-500 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" %>
+    </div>
+
+    <p>
+      <%= link "Register", to: Routes.user_registration_path(@conn, :new), class: "inline-block align-baseline font-bold text-sm hover:underline" %> |
+      <%= link "Forgot your password?", to: Routes.user_reset_password_path(@conn, :new), class: "inline-block align-baseline font-bold text-sm hover:underline" %>
+    </p>
   </div>
 </.form>
-
-<p>
-  <%= link "Register", to: Routes.user_registration_path(@conn, :new) %> |
-  <%= link "Forgot your password?", to: Routes.user_reset_password_path(@conn, :new) %>
-</p>
+</div>

@@ -1,0 +1,12 @@
+<nav>
+  <ul class="inline-flex space-x-4">
+  <%= if @current_user do %>
+    <li class="underline underline-offset-8 decoration-4 decoration-indigo-500 font-semibold"><%= @current_user.email %></li>
+    <li><%= link "Settings", to: Routes.user_settings_path(@conn, :edit), class: "font-bold hover:underline" %></li>
+    <li><%= link "Log out", to: Routes.user_session_path(@conn, :delete), class: "font-bold hover:underline", method: :delete %></li>
+  <% else %>
+    <li><%= link "Register", to: Routes.user_registration_path(@conn, :new), class: "font-bold hover:underline" %></li>
+    <li><%= link "Log in", to: Routes.user_session_path(@conn, :new), class: "font-bold hover:underline" %></li>
+  <% end %>
+  </ul>
+</nav>

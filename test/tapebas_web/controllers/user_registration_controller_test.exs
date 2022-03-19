@@ -7,7 +7,6 @@ defmodule TapebasWeb.UserRegistrationControllerTest do
     test "renders registration page", %{conn: conn} do
       conn = get(conn, Routes.user_registration_path(conn, :new))
       response = html_response(conn, 200)
-      assert response =~ "<h1>Register</h1>"
       assert response =~ "Log in</a>"
       assert response =~ "Register</a>"
     end
@@ -46,7 +45,6 @@ defmodule TapebasWeb.UserRegistrationControllerTest do
         })
 
       response = html_response(conn, 200)
-      assert response =~ "<h1>Register</h1>"
       assert response =~ "must have the @ sign and no spaces"
     end
   end

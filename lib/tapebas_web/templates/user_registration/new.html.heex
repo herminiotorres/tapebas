@@ -1,26 +1,36 @@
-<h1>Register</h1>
+<div class="flex w-screen justify-center">
+  <.form let={f} for={@changeset} action={Routes.user_registration_path(@conn, :create)} class="mt-1 rounded px-8 pt-6 pb-8 mb-4">
+    <%= if @changeset.action do %>
+      <div class="alert alert-danger">
+        <p>Oops, something went wrong! Please check the errors below.</p>
+      </div>
+    <% end %>
 
-<.form let={f} for={@changeset} action={Routes.user_registration_path(@conn, :create)}>
-  <%= if @changeset.action do %>
-    <div class="alert alert-danger">
-      <p>Oops, something went wrong! Please check the errors below.</p>
+    <div class="mb-4">
+      <%= label f, :email, class: "block text-gray-700 text-sm font-bold mb-2" %>
+      <%= email_input f, :email, required: true, placeholder: "your@email.com", class: "shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:ring-indigo-500 focus:border-indigo-500" %>
+      <div class="text-red-500 text-xs italic">
+        <%= error_tag f, :email %>
+      </div>
     </div>
-  <% end %>
 
-  <%= label f, :email %>
-  <%= email_input f, :email, required: true %>
-  <%= error_tag f, :email %>
+    <div class="mb-6">
+      <%= label f, :password, class: "block text-gray-700 text-sm font-bold mb-2" %>
+      <%= password_input f, :password, required: true, placeholder: "******", class: "shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:ring-indigo-500 focus:border-indigo-500" %>
+      <div class="mt-5 text-red-500 text-xs italic">
+        <%= error_tag f, :password %>
+      </div>
+    </div>
 
-  <%= label f, :password %>
-  <%= password_input f, :password, required: true %>
-  <%= error_tag f, :password %>
+    <div class="flex items-center justify-between space-x-12">
+      <div>
+        <%= submit "Register", class: "bg-indigo-500 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" %>
+      </div>
 
-  <div>
-    <%= submit "Register" %>
-  </div>
-</.form>
-
-<p>
-  <%= link "Log in", to: Routes.user_session_path(@conn, :new) %> |
-  <%= link "Forgot your password?", to: Routes.user_reset_password_path(@conn, :new) %>
-</p>
+      <p>
+        <%= link "Log in", to: Routes.user_session_path(@conn, :new), class: "inline-block align-baseline font-bold text-sm hover:underline" %> |
+        <%= link "Forgot your password?", to: Routes.user_reset_password_path(@conn, :new), class: "inline-block align-baseline font-bold text-sm hover:underline" %>
+      </p>
+    </div>
+  </.form>
+</div>
