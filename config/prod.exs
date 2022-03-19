@@ -1,6 +1,10 @@
 import Config
 
-host = System.get_env("PHX_HOST") || "tapebas.herokuapp.com"
+host =
+  case System.get_env("APP_NAME") do
+    nil -> "tapebas.gigalixirapp.com"
+    sub -> "#{sub}.gigalixirapp.com"
+  end
 
 # For production, don't forget to configure the url host
 # to something meaningful, Phoenix uses this information
@@ -12,7 +16,6 @@ host = System.get_env("PHX_HOST") || "tapebas.herokuapp.com"
 # which you should run after static files are built and
 # before starting your production server.
 config :tapebas, TapebasWeb.Endpoint,
-  load_from_system_env: true,
   url: [scheme: "https", host: host, port: 443],
   force_ssl: [rewrite_on: [:x_forwarded_proto]],
   cache_static_manifest: "priv/static/cache_manifest.json"
