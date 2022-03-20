@@ -20,7 +20,13 @@ defmodule TapebasWeb.Router do
   scope "/", TapebasWeb do
     pipe_through :browser
 
-    live "/", PageLive
+    live "/", PageLive, :index
+
+    # events
+    scope "/events" do
+      live "/", EventLive.Index, :index
+      live "/:slug", EventLive.Show, :show
+    end
   end
 
   ## Authentication routes
