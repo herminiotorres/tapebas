@@ -2,6 +2,12 @@
   <%= @event.title %>
 </h1>
 
+<%= if @readers > 0 do %>
+  <p class="absolute left-4 top-[150px] sm:top-[110px]">
+    <%= @readers %> onlines
+  </p>
+<% end %>
+
 <div class="flex justify-center">
   <article class="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
     <%= for talk <- @event.talks do %>
