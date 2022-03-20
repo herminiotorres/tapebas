@@ -8,6 +8,8 @@ defmodule Tapebas.Events do
 
   alias Tapebas.Events.Event
 
+  def all, do: all([])
+
   def all(criteria) do
     {order_by, criteria} = Keyword.pop(criteria, :order_by)
     {preloads, criteria} = Keyword.pop(criteria, :preload, [])

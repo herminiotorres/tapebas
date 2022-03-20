@@ -14,6 +14,8 @@ defmodule Tapebas.Application do
       TapebasWeb.Telemetry,
       # Start the PubSub system
       {Phoenix.PubSub, name: Tapebas.PubSub},
+      # Start the Phx Presence system
+      TapebasWeb.Presence,
       # Start the Endpoint (http/https)
       TapebasWeb.Endpoint
       # Start a worker by calling: Tapebas.Worker.start_link(arg)
