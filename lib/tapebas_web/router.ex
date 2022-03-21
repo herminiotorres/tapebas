@@ -25,7 +25,11 @@ defmodule TapebasWeb.Router do
     # events
     scope "/events" do
       live "/", EventLive.Index, :index
-      live "/:slug", EventLive.Show, :show
+
+      scope "/:event_slug" do
+        live "/", EventLive.Show, :show
+        live "/talk/:talk_id", TalkLive.Show, :show
+      end
     end
   end
 

@@ -8,9 +8,9 @@ defmodule Tapebas.Events do
 
   alias Tapebas.Events.Event
 
-  def all, do: all([])
+  def list_events, do: list_events([])
 
-  def all(criteria) do
+  def list_events(criteria) do
     {order_by, criteria} = Keyword.pop(criteria, :order_by)
     {preloads, criteria} = Keyword.pop(criteria, :preload, [])
 
@@ -21,7 +21,7 @@ defmodule Tapebas.Events do
     |> Repo.all()
   end
 
-  def get(criteria) do
+  def get_event(criteria) do
     {preloads, criteria} = Keyword.pop(criteria, :preload, [])
 
     Event
@@ -29,6 +29,51 @@ defmodule Tapebas.Events do
     |> event_maybe_preload(preloads, criteria)
     |> Repo.one()
   end
+
+  defp event_filter_where(criteria) do
+    Enum.reduce(criteria, dynamic(true), fn
+      {:id, ids}, dynamic when is_list(ids) ->
+        dynamic([e], ^dynamic and e.id in ^ids)
+
+      {:id, id}, dynamic ->
+        dynamic([e], ^dynamic and e.id == ^id)
+
+      {:slug, slug}, dynamic ->
+        dynamic([e], ^dynamic and e.slug == ^slug)
+
+      {:user_id, user_id}, dynamic ->
+        dynamic([e], ^dynamic and e.user_id == ^user_id)
+
+      other, _dynamic ->
+        raise "Unspported Event filter #{inspect(other)}"
+    end)
+  end
+
+  defp event_maybe_preload(query, preloads, _criteria) do
+    preloads = List.wrap(preloads || [])
+
+    Enum.reduce(preloads, query, fn preload, query ->
+      case preload do
+        :talks ->
+          preload(query, :talks)
+
+        {:talks, :questions} ->
+          preload(query, talks: :questions)
+
+        :user ->
+          preload(query, :user)
+
+        _ ->
+          raise "Unsupported Event preload #{inspect(preload)}"
+      end
+    end)
+  end
+
+  defp event_do_order_by(query, {asc_or_desc, key}) do
+    order_by(query, [e], [{^asc_or_desc, field(e, ^key)}])
+  end
+
+  defp event_do_order_by(query, _), do: order_by(query, [e], desc: e.inserted_at)
 
   @doc """
   Creates a event.
@@ -95,81 +140,77 @@ defmodule Tapebas.Events do
     Event.changeset(event, attrs)
   end
 
-  defp event_filter_where(criteria) do
+  alias Tapebas.Events.Talk
+
+  def list_talks, do: list_talks([])
+
+  def list_talks(criteria) do
+    {order_by, criteria} = Keyword.pop(criteria, :order_by)
+    {preloads, criteria} = Keyword.pop(criteria, :preload, [])
+
+    Talk
+    |> where(^talk_filter_where(criteria))
+    |> talk_do_order_by(order_by)
+    |> talk_maybe_preload(preloads, criteria)
+    |> Repo.all()
+  end
+
+  def get_talk(criteria) do
+    {preloads, criteria} = Keyword.pop(criteria, :preload, [])
+
+    Talk
+    |> where(^talk_filter_where(criteria))
+    |> talk_maybe_preload(preloads, criteria)
+    |> Repo.one()
+  end
+
+  defp talk_filter_where(criteria) do
     Enum.reduce(criteria, dynamic(true), fn
       {:id, ids}, dynamic when is_list(ids) ->
-        dynamic([m], ^dynamic and m.id in ^ids)
+        dynamic([t], ^dynamic and t.id in ^ids)
 
       {:id, id}, dynamic ->
-        dynamic([m], ^dynamic and m.id == ^id)
+        dynamic([t], ^dynamic and t.id == ^id)
 
-      {:slug, slug}, dynamic ->
-        dynamic([e], ^dynamic and e.slug == ^slug)
+      {:type, type}, dynamic ->
+        dynamic([t], ^dynamic and t.type == ^type)
 
-      {:user_id, user_id}, dynamic ->
-        dynamic([e], ^dynamic and e.user_id == ^user_id)
+      {:speaker, speaker}, dynamic ->
+        dynamic([t], ^dynamic and t.speaker == ^speaker)
 
       other, _dynamic ->
-        raise "Unspported Event filter #{inspect(other)}"
+        raise "Unspported Talk filter #{inspect(other)}"
     end)
   end
 
-  defp event_maybe_preload(query, preloads, _criteria) do
+  defp talk_maybe_preload(query, preloads, _criteria) do
     preloads = List.wrap(preloads || [])
 
     Enum.reduce(preloads, query, fn preload, query ->
       case preload do
-        :talks ->
-          preload(query, :talks)
+        {:questions, [comments: :user]} ->
+          preload(query, questions: [comments: :user])
 
-        {:talks, :questions} ->
-          preload(query, talks: :questions)
+        {:questions, :comments} ->
+          preload(query, questions: :comments)
 
-        :user ->
-          preload(query, :user)
+        {:questions, :user} ->
+          preload(query, questions: :user)
+
+        :questions ->
+          preload(query, :questions)
 
         _ ->
-          raise "Unsupported Event preload #{inspect(preload)}"
+          raise "Unsupported Talk preload #{inspect(preload)}"
       end
     end)
   end
 
-  defp event_do_order_by(query, {asc_or_desc, key}) do
-    order_by(query, [m], [{^asc_or_desc, field(m, ^key)}])
+  defp talk_do_order_by(query, {asc_or_desc, key}) do
+    order_by(query, [t], [{^asc_or_desc, field(t, ^key)}])
   end
 
-  defp event_do_order_by(query, _), do: order_by(query, [m], desc: m.inserted_at)
-
-  alias Tapebas.Events.Talk
-
-  @doc """
-  Returns the list of talks.
-
-  ## Examples
-
-      iex> list_talks()
-      [%Talk{}, ...]
-
-  """
-  def list_talks do
-    Repo.all(Talk)
-  end
-
-  @doc """
-  Gets a single talk.
-
-  Raises `Ecto.NoResultsError` if the Talk does not exist.
-
-  ## Examples
-
-      iex> get_talk!(123)
-      %Talk{}
-
-      iex> get_talk!(456)
-      ** (Ecto.NoResultsError)
-
-  """
-  def get_talk!(id), do: Repo.get!(Talk, id)
+  defp talk_do_order_by(query, _), do: order_by(query, [t], desc: t.inserted_at)
 
   @doc """
   Creates a talk.
