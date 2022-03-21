@@ -1,0 +1,40 @@
+<header class="flex flex-col">
+  <h1 class="text-center text-4xl font-semibold tracking-widest leading-relaxed uppercase underline decoration-wavy">
+    <%= @talk.title %>
+  </h1>
+  <div class="mb-20 text-center">by <span class="font-bold"><%= @talk.speaker %></span></div>
+</header>
+
+<div class="flex justify-center">
+  <article class="grid grid-cols-1 gap-y-20 w-10/12">
+    <%= for question <- @talk.questions do %>
+      <div id={"talk-#{question.id}"} class="h-full rounded-lg shadow-lg bg-indigo-100 relative">
+        <span class="absolute text-white bg-indigo-600 -translate-x-1 -translate-y-3 px-4">question</span>
+        <div class="px-6 py-4 border border-b-indigo-400 shadow-md shadow-indigo-400">
+
+          <h2 class="font-bold text-xl mb-2">
+            <%= question.title %>
+          </h2>
+          <p class="text-gray-700 text-base italic">
+            by <%= String.split(question.user.email, "@") |> hd() %>
+          </p>
+        </div>
+
+        <div class="divide-y divide-indigo-700">
+          <%= for comment <- question.comments do %>
+            <div id={"question-#{comment.id}"}>
+              <div class="px-16 py-4">
+                <h2 class="text-xl mb-1">
+                  <%= comment.message %>
+                </h2>
+                <p class="text-gray-700 italic text-xs">
+                  Comment by <%= String.split(comment.user.email, "@") |> hd() %>
+                </p>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+  </article>
+</div>

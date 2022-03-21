@@ -2,19 +2,14 @@
   <%= @event.title %>
 </h1>
 
-<%= if @readers > 0 do %>
-  <p class="absolute left-4 top-[150px] sm:top-[110px]">
-    <%= @readers %> onlines
-  </p>
-<% end %>
-
 <div class="flex justify-center">
-  <article class="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+  <article class="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-y-24 gap-x-8">
     <%= for talk <- @event.talks do %>
-      <div id={"event-#{talk.id}"} class="max-w-sm h-full rounded-lg shadow-lg bg-indigo-100">
-        <div class="px-6 py-4 h-3/4">
+      <div id={"event-#{talk.id}"} class="relative max-w-sm h-full rounded-lg shadow-lg bg-indigo-100">
+        <span class="absolute text-white bg-indigo-600 -translate-x-1 -translate-y-3 px-4">talk</span>
+        <div class="mt-4 px-6 py-4 h-3/4">
           <h2 class="font-bold text-xl mb-2">
-            <%= live_redirect to: Routes.event_show_path(@socket, :show, @event.slug), class: "hover:underline underline-offset-8 decoration-2 decoration-indigo-500 font-semibold" do %>
+            <%= live_redirect to: Routes.talk_show_path(@socket, :show, @event.slug, talk.id), class: "hover:underline underline-offset-8 decoration-2 decoration-indigo-500 font-semibold" do %>
               <%= talk.title %>
             <% end %>
           </h2>
@@ -23,20 +18,23 @@
           </p>
         </div>
         <div class="inline-flex space-x-8 float-right mr-6 mb-12">
-          <span class="bg-indigo-600 text-white px-2 rounded-xl text-sm font-bold tracking-widest leading-relaxed">
+          <span class={[
+            "text-white px-2 rounded-xl text-sm font-bold tracking-widest leading-relaxed",
+            "#{if talk.type == :keynote, do: "bg-sky-600"}",
+            "#{if talk.type == :beginner, do: "bg-emerald-600"}",
+            "#{if talk.type == :general, do: "bg-orange-600"}",
+            "#{if talk.type == :advanced, do: "bg-red-600"}"
+            ]}>
             #<%= talk.type %>
           </span>
-          <%= if talk.questions == [] do %>
-            <Icon.no_question />
-          <% else %>
-            <Icon.question />
+        </div>
+
+        <div class="absolute inline-flex space-x-3 right-0 -translate-x-1 translate-y-8">
+          <%= live_redirect to: Routes.talk_show_path(@socket, :show, @event.slug, talk.id) do %>
+            <Icon.question class="h-8 w-8" />
           <% end %>
 
-          <%= if talk.likes == [] do %>
-            <Icon.unlike />
-          <% else %>
-            <Icon.like />
-          <% end %>
+          <Icon.unlike class="h-8 w-8" />
         </div>
       </div>
     <% end %>
