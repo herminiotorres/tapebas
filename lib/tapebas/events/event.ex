@@ -24,7 +24,7 @@ defmodule Tapebas.Events.Event do
     |> cast(attrs, @fields)
     |> build_slug()
     |> validate_required(@required_fields)
-    |> validate_length(:title, min: 10)
+    |> validate_length(:title, min: 6)
     |> unique_constraint(:slug)
     |> unique_constraint(:title)
     |> foreign_key_constraint(:user_id)

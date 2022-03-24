@@ -47,9 +47,13 @@ events =
 for %{event_id: event_id} <- events do
   1..10
   |> Enum.map(fn _ ->
+    title = Faker.Person.title()
+
     Events.create_talk(%{
-      title: Faker.Person.title(),
+      title: title,
+      slug: Slug.slugify(title),
       speaker: Faker.Person.name(),
+      description: Faker.StarWars.quote(),
       type: Enum.random([:keynote, :general, :beginner, :advanced]),
       event_id: event_id
     })

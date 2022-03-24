@@ -1,0 +1,35 @@
+
+
+<h1 class="mt-20 mb-10 text-center text-4xl font-semibold tracking-widest leading-relaxed uppercase underline decoration-wavy">
+  <%= @room_id %>
+</h1>
+
+<div class="flex justify-center">
+    <div id="chat-container" class="overflow-auto">
+      <div>
+      <div id="chat-messages" phx-update="append">
+        <%= for message <- @messages do %>
+          <%= display_message(message) %>
+        <%end %>
+      </div>
+
+      <.form
+        let={f}
+        for={:chat}
+        id="chat-form"
+        phx-change="form_updated"
+        phx-submit="submit_message">
+
+        <%= text_input f, :message, value: @message, placeholder: "Enter your message..." %>
+
+      </.form>
+      </div>
+    </div>
+
+  <div id="user-list">
+    <h2> Users Online </h2>
+    <%= for user <- @user_list do %>
+      <p><%= user %></p>
+    <%end %>
+  </div>
+</div>

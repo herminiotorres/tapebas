@@ -17,22 +17,6 @@ defmodule TapebasWeb.Router do
     plug :accepts, ["json"]
   end
 
-  scope "/", TapebasWeb do
-    pipe_through :browser
-
-    live "/", PageLive, :index
-
-    # events
-    scope "/events" do
-      live "/", EventLive.Index, :index
-
-      scope "/:event_slug" do
-        live "/", EventLive.Show, :show
-        live "/talk/:talk_id", TalkLive.Show, :show
-      end
-    end
-  end
-
   ## Authentication routes
 
   scope "/", TapebasWeb do
@@ -51,6 +35,29 @@ defmodule TapebasWeb.Router do
   scope "/", TapebasWeb do
     pipe_through [:browser, :require_authenticated_user]
 
+    # events
+    live_session :events, on_mount: {TapebasWeb.MountHelpers, :auth} do
+      scope "/chat" do
+        live "/:event_slug", RoomLive, :index
+      end
+
+      scope "/events" do
+        live "/", EventLive.Index, :index
+        live "/new", EventLive.Index, :new
+
+        scope "/:event_slug" do
+          live "/", EventLive.Show, :show
+          live "/talk/new", EventLive.Show, :new_talk
+
+          scope "/talk/:talk_slug" do
+            live "/", TalkLive.Show, :show
+            live "/question/new", TalkLive.Show, :new_question, as: :new_question
+            live "/:question_id/comment/new", TalkLive.Show, :new_comment, as: :new_comment
+          end
+        end
+      end
+    end
+
     get "/users/settings", UserSettingsController, :edit
     put "/users/settings", UserSettingsController, :update
     get "/users/settings/confirm_email/:token", UserSettingsController, :confirm_email
@@ -58,6 +65,8 @@ defmodule TapebasWeb.Router do
 
   scope "/", TapebasWeb do
     pipe_through [:browser]
+
+    live "/", PageLive, :index
 
     delete "/users/log_out", UserSessionController, :delete
     get "/users/confirm", UserConfirmationController, :new
