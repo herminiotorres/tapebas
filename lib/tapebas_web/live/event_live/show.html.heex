@@ -1,20 +1,43 @@
-<h1 class="mb-10 text-center text-4xl font-semibold tracking-widest leading-relaxed uppercase underline decoration-wavy">
+<h1 class="mt-20 mb-10 text-center text-4xl font-semibold tracking-widest leading-relaxed uppercase underline decoration-wavy">
   <%= @event.title %>
 </h1>
+
+<nav class="absolute top-[145px] sm:top-[123px] md:top-[103px] right-[25px] sm:right-[40px]">
+  <span><%= live_patch "Add Talk", to: Routes.event_show_path(@socket, :new_talk, @event.slug), class: "px-2 py-2 rounded-b-lg shadow-lg font-semibold text-indigo-800 bg-indigo-300" %></span>
+</nav>
+
+<%= if @live_action in [:new_talk, :edit_talk] do %>
+  <.modal return_to={Routes.event_show_path(@socket, :show, @event.slug)}>
+    <.live_component
+      module={TapebasWeb.TalkLive.FormComponent}
+      id={@talk.id || :new_talk}
+      title={@page_title}
+      action={@live_action}
+      talk={@talk}
+      event_id={@event.id}
+      return_to={Routes.event_show_path(@socket, :show, @event.slug)}
+    />
+  </.modal>
+<% end %>
 
 <div class="flex justify-center">
   <article class="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-y-24 gap-x-8">
     <%= for talk <- @event.talks do %>
-      <div id={"event-#{talk.id}"} class="relative max-w-sm h-full rounded-lg shadow-lg bg-indigo-100">
+      <div id={"event-#{talk.id}"} class="relative max-w-sm h-full rounded-lg shadow-lg bg-indigo-200">
         <span class="absolute text-white bg-indigo-600 -translate-x-1 -translate-y-3 px-4">talk</span>
         <div class="mt-4 px-6 py-4 h-3/4">
           <h2 class="font-bold text-xl mb-2">
-            <%= live_redirect to: Routes.talk_show_path(@socket, :show, @event.slug, talk.id), class: "hover:underline underline-offset-8 decoration-2 decoration-indigo-500 font-semibold" do %>
+            <%= live_redirect to: Routes.talk_show_path(@socket, :show, @event.slug, talk.slug), class: "hover:underline underline-offset-8 decoration-2 decoration-indigo-500 font-semibold" do %>
               <%= talk.title %>
             <% end %>
           </h2>
           <p class="text-gray-700 text-base">
             by <%= talk.speaker %>
+          </p>
+          <p class="text-gray-700 text-base">
+            <%= if talk.description do %>
+              <%= String.slice(talk.description, 0..145) %>
+            <% end %>
           </p>
         </div>
         <div class="inline-flex space-x-8 float-right mr-6 mb-12">
@@ -29,12 +52,16 @@
           </span>
         </div>
 
-        <div class="absolute inline-flex space-x-3 right-0 -translate-x-1 translate-y-8">
-          <%= live_redirect to: Routes.talk_show_path(@socket, :show, @event.slug, talk.id) do %>
-            <Icon.question class="h-8 w-8" />
+        <div class="absolute right-0 -translate-x-1 translate-y-12">
+          <%= if Enum.any?(talk.likes, fn %{user_id: user_id} -> user_id == @current_user.id end) do %>
+            <%= link to: "#", phx_click: "unlike", phx_value_talk_id: talk.id, phx_value_user_id: @current_user.id do %>
+              <Icon.like class="h-8 w-8" />
+            <% end %>
+          <% else %>
+            <%= link to: "#", phx_click: "like", phx_value_talk_id: talk.id, phx_value_user_id: @current_user.id do %>
+              <Icon.unlike class="h-8 w-8" />
+            <% end %>
           <% end %>
-
-          <Icon.unlike class="h-8 w-8" />
         </div>
       </div>
     <% end %>

@@ -5,12 +5,46 @@
   <div class="mb-20 text-center">by <span class="font-bold"><%= @talk.speaker %></span></div>
 </header>
 
+<nav class="absolute top-[145px] sm:top-[123px] md:top-[103px] right-[25px] sm:right-[40px]">
+  <span><%= live_patch "Add Question", to: Routes.new_question_path(@socket, :new_question, @talk.event.slug, @talk.slug), class: "px-2 py-2 rounded-b-lg shadow-lg font-semibold text-indigo-800 bg-indigo-300" %></span>
+</nav>
+
+<%= if @live_action in [:new_question, :edit_question] do %>
+  <.modal return_to={Routes.talk_show_path(@socket, :show, @talk.event.slug, @talk.slug)}>
+    <.live_component
+      module={TapebasWeb.TalkLive.QuestionFormComponent}
+      id={:new_question}
+      title={"Question"}
+      action={@live_action}
+      question={%Question{}}
+      current_user_id={@current_user.id}
+      talk_id={@talk.id}
+      return_to={Routes.talk_show_path(@socket, :show, @talk.event.slug, @talk.slug)}
+    />
+  </.modal>
+<% end %>
+
+<%= if @live_action in [:new_comment, :edit_comment] do %>
+  <.modal return_to={Routes.talk_show_path(@socket, :show, @talk.event.slug, @talk.slug)}>
+    <.live_component
+      module={TapebasWeb.TalkLive.CommentFormComponent}
+      id={:new_comment}
+      title={"Comment"}
+      action={@live_action}
+      comment={%Comment{}}
+      question_id={@question_id || nil}
+      current_user_id={@current_user.id}
+      return_to={Routes.talk_show_path(@socket, :show, @talk.event.slug, @talk.slug)}
+    />
+  </.modal>
+<% end %>
+
 <div class="flex justify-center">
   <article class="grid grid-cols-1 gap-y-20 w-10/12">
     <%= for question <- @talk.questions do %>
       <div id={"talk-#{question.id}"} class="h-full rounded-lg shadow-lg bg-indigo-100 relative">
         <span class="absolute text-white bg-indigo-600 -translate-x-1 -translate-y-3 px-4">question</span>
-        <div class="px-6 py-4 border border-b-indigo-400 shadow-md shadow-indigo-400">
+        <div class="mb-1 px-6 py-4 border border-b-indigo-400 shadow-md shadow-indigo-400">
 
           <h2 class="font-bold text-xl mb-2">
             <%= question.title %>
@@ -20,7 +54,9 @@
           </p>
         </div>
 
-        <div class="divide-y divide-indigo-700">
+        <%= live_patch "Add Comment", to: Routes.new_comment_path(@socket, :new_comment, @talk.event.slug, @talk.slug, question.id), class: "px-2 py-2 rounded-b-lg shadow-lg font-semibold text-indigo-800 bg-indigo-300" %>
+
+        <div class="divide-y divide-indigo-700 mt-4">
           <%= for comment <- question.comments do %>
             <div id={"question-#{comment.id}"}>
               <div class="px-16 py-4">

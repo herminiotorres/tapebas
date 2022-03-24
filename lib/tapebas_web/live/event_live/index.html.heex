@@ -1,11 +1,29 @@
-<h1 class="mb-10 text-center text-4xl font-semibold tracking-widest leading-relaxed uppercase underline decoration-wavy">
+<h1 class="mt-20 mb-10 text-center text-4xl font-semibold tracking-widest leading-relaxed uppercase underline decoration-wavy">
   Events
 </h1>
 
+<nav class="absolute top-[145px] sm:top-[123px] md:top-[103px] right-[25px] sm:right-[40px]">
+  <span><%= live_patch "Add Event", to: Routes.event_index_path(@socket, :new), class: "px-2 py-2 rounded-b-lg shadow-lg font-semibold text-indigo-800 bg-indigo-300" %></span>
+</nav>
+
+<%= if @live_action in [:new, :edit] do %>
+  <.modal return_to={Routes.event_index_path(@socket, :index)}>
+    <.live_component
+      module={TapebasWeb.EventLive.FormComponent}
+      id={@event.id || :new}
+      title={@page_title}
+      action={@live_action}
+      event={@event}
+      current_user_id={@current_user.id}
+      return_to={Routes.event_index_path(@socket, :index)}
+    />
+  </.modal>
+<% end %>
+
 <div class="flex justify-center">
-  <article class="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+  <article class="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-20">
     <%= for event <- @events do %>
-    <div id={"event-#{event.id}"} class="max-w-sm h-full rounded-lg shadow-lg bg-indigo-100">
+    <div id={"event-#{event.id}"} class="relative max-w-sm h-full rounded-lg shadow-lg bg-indigo-200">
       <span class="absolute text-white bg-indigo-600 -translate-x-1 -translate-y-3 px-4">event</span>
       <div class="mt-4 px-6 py-4 h-3/4">
         <h2 class="font-bold text-xl mb-2">
@@ -14,8 +32,15 @@
           <% end %>
         </h2>
         <p class="text-gray-700 text-base">
-          <%= String.slice(event.description, 0..145) %>
+          <%= if event.description do %>
+            <%= String.slice(event.description, 0..145) %>
+          <% end %>
         </p>
+      </div>
+      <div class="absolute right-0 -translate-x-1 translate-y-6">
+        <%= live_redirect to: Routes.room_path(@socket, :index, event.slug) do %>
+          <Icon.chat class="h-8 w-8" />
+        <% end %>
       </div>
     </div>
     <% end %>

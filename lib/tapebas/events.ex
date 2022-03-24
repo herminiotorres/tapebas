@@ -60,6 +60,9 @@ defmodule Tapebas.Events do
         {:talks, :questions} ->
           preload(query, talks: :questions)
 
+        {:talks, :likes} ->
+          preload(query, talks: :likes)
+
         :user ->
           preload(query, :user)
 
@@ -172,6 +175,9 @@ defmodule Tapebas.Events do
       {:id, id}, dynamic ->
         dynamic([t], ^dynamic and t.id == ^id)
 
+      {:slug, slug}, dynamic ->
+        dynamic([t], ^dynamic and t.slug == ^slug)
+
       {:type, type}, dynamic ->
         dynamic([t], ^dynamic and t.type == ^type)
 
@@ -199,6 +205,12 @@ defmodule Tapebas.Events do
 
         :questions ->
           preload(query, :questions)
+
+        :likes ->
+          preload(query, :likes)
+
+        :event ->
+          preload(query, :event)
 
         _ ->
           raise "Unsupported Talk preload #{inspect(preload)}"
@@ -467,5 +479,27 @@ defmodule Tapebas.Events do
   """
   def change_comment(%Comment{} = comment, attrs \\ %{}) do
     Comment.changeset(comment, attrs)
+  end
+
+  # likes talks
+  alias Tapebas.Events.Like
+
+  def like(attrs) do
+    %Like{}
+    |> Like.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  def unlike(attrs) do
+    with %Like{} = like <-
+           attrs
+           |> get_like()
+           |> Repo.one() do
+      Repo.delete(like)
+    end
+  end
+
+  def get_like(%{user_id: user_id, talk_id: talk_id} = _attrs) do
+    from l in Like, where: [user_id: ^user_id, talk_id: ^talk_id]
   end
 end
